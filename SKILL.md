@@ -37,6 +37,7 @@ Pide al usuario que suba o pegue lo que tenga de esta lista:
 4. **Calendario** — link de Calendly/Cal.com, duración de la llamada, quién la atiende.
 5. **Prueba social** — capturas de testimonios reales, casos, cifras verificables.
 6. **VSL o contenido existente** — si ya tiene video, link y duración.
+7. **Pixel de Meta** — el ID del pixel (Administrador de Eventos → Orígenes de datos). Si no tiene pixel, guíale a crearlo en Events Manager antes de la Fase 5: aunque aún no invierta en ads, conviene que el pixel empiece a recibir datos cualificados desde el día uno (condicionamiento).
 
 Si no existe alguno, no bloquees: reconstrúyelo con preguntas y dile que el documento resultante se lo entregas tú al final.
 
