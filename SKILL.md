@@ -95,7 +95,8 @@ LANDING  ──  titular + VSL + aplicación con agenda INTEGRADA
 **Reglas de hierro:**
 
 - **Aplicación y agenda en UN solo paso.** Separarlas pierde ~50% de los aplicantes ("ya apliqué, ya me llamarán") y duplica tu coste por llamada. Usa Typeform con Calendly integrado (o Tally + Cal.com en versión gratuita): elegir horario es una pregunta más del formulario.
-- **Pixel SOLO en la página de confirmación de cualificados.** Evento estándar `Schedule` o `CompleteRegistration` — no `Lead`, no eventos custom. Si pixeleas la página DQ, entrenas al algoritmo para traerte más descalificados y tu coste por llamada cualificada sube aunque el coste por lead parezca bien.
+- **Pixel SOLO en la ruta cualificada, con escalera de dos eventos.** `Lead` cuando el cualificado deja sus datos y `Schedule` cuando confirma la llamada. Siempre eventos estándar, nunca custom (los estándar aprovechan la base de datos histórica de la plataforma). El pixel solo aprende de lo que ve: los descalificados no disparan NADA — si pixeleas la página DQ, entrenas al algoritmo para traerte más descalificados y tu coste por llamada cualificada sube aunque el coste por lead parezca bien.
+- **Optimiza por el evento que tenga volumen.** La plataforma necesita ~50 conversiones/semana en el evento optimizado para salir de la fase de aprendizaje. Si `Schedule` no llega, empieza optimizando por `Lead` (cualificado, filtrado) y gradúate a `Schedule` cuando lo sostengas 2 semanas.
 - **Los descalificados también valen dinero:** página DQ con drop sell para licuar el gasto publicitario. Y recuerda: la gente miente en las preguntas de cualificación (la mayoría admite que mentiría sobre cuánto dinero tiene), así que un setter puede repescar DQs manualmente.
 - **El precio se dice en el VSL. Siempre.** A corto plazo tendrás menos llamadas — esa es la ventana de condicionamiento del pixel. A largo plazo solo llegan llamadas cualificadas que conocen el precio, y tus vendedores se convierten en cajeros.
 
@@ -267,7 +268,10 @@ npm run dev   # → http://localhost:4321
 - **Landing Modo A:** titular + embed del video + aplicación. Nada más. **Modo B:** las 6 secciones de El Círculo como componentes + aplicación al final.
 - **Embeds con placeholders comentados** (`<!-- PEGA AQUÍ … -->`) para: video (Wistia recomendado por sus analíticas de retención; YouTube unlisted como opción gratis), Typeform (o Tally) y Calendly.
 - **Typeform → ruteo:** endings condicionales — cualificado → `https://su-dominio/gracias`, descalificado → `/casi`. La pregunta de agenda usa la integración nativa Typeform×Calendly. Versión gratis: Tally + Cal.com con lógica condicional.
-- **Pixel de Meta SOLO en `gracias.astro`**, como `<script is:inline>` con el código base + `fbq('track', 'Schedule');` y `PIXEL_ID` como placeholder. Verifica dos veces que ni `index.astro` ni `casi.astro` llevan el evento de conversión.
+- **Pixel de Meta SOLO en `gracias.astro`**, como `<script is:inline>` con el código base (`PIXEL_ID` como placeholder) y la escalera de eventos según el flujo:
+  - *Typeform×Calendly integrado* (la agenda va dentro del formulario): al cargar `gracias`, dispara `fbq('track','Lead')` + `fbq('track','Schedule')` — quien aterriza ahí ya dejó datos Y agendó.
+  - *Agenda en la página de gracias* (stack gratis Tally + Cal.com embebido): `Lead` al cargar la página, y `Schedule` en el callback `bookingSuccessful` del embed de Cal.com.
+  Verifica dos veces que ni `index.astro` ni `casi.astro` disparan ningún evento.
 - Testimonios como imágenes reales clicables; datos de contacto visibles en la confirmación; capítulos en los videos.
 - Accesibilidad e interacción: `alt` en imágenes, `label` en inputs, foco visible, `cursor-pointer` en todo lo clicable, botones táctiles ≥44px, transiciones 150-300ms.
 
@@ -323,8 +327,9 @@ La CLI construye el proyecto Astro y devuelve la URL de producción (`https://mi
    - [ ] La aplicación se completa y la agenda funciona dentro del formulario
    - [ ] Respuesta cualificada → aterriza en `/gracias`
    - [ ] Respuesta descalificada → aterriza en `/casi`
-   - [ ] El pixel dispara `Schedule` SOLO en `/gracias` (verificar con Meta Pixel Helper o Events Manager → Test Events)
-   - [ ] El evento aparece en el Administrador de Eventos de Meta
+   - [ ] El pixel dispara `Lead` y `Schedule` SOLO en `/gracias` (verificar con Meta Pixel Helper o Events Manager → Test Events)
+   - [ ] Ni `/casi` ni la landing disparan ningún evento
+   - [ ] Ambos eventos aparecen en el Administrador de Eventos de Meta
 
 No des el funnel por terminado hasta que este checklist esté completo.
 
@@ -358,6 +363,8 @@ Truco de producción: clip farming — un podcast o video largo grabado con inte
 | Play rate del VSL | <30% = revisar página/thumbnail | 30-50% | 50%+ | |
 
 Modelo financiero a rellenar: inversión mensual → coste por llamada → llamadas → × show rate → × close rate → × ticket medio = ingresos; ROAS y CPA. Palancas por orden de impacto: subir show rate (confirmación + Punto 3 + selfie videos), subir close rate (pre-framing + formación), bajar coste por llamada (aplicación integrada + pixel limpio), y solo entonces subir inversión — escalar mala economía unitaria solo acelera las pérdidas.
+
+**Escalera del pixel al escalar:** optimiza por `Lead` cualificado hasta sostener ~50 `Schedule`/semana durante 2 semanas; entonces gradúate a optimizar por `Schedule`. Al graduarte no mates la campaña del evento inferior: 70% del presupuesto al evento probado, 30% al nuevo, y desplaza gradualmente. Aviso importante: al empezar a filtrar cualificados, el coste por resultado en el Ads Manager SUBIRÁ — no es un coste real, es que por fin estás midiendo el coste por lead cualificado que siempre pagaste sin verlo. Quien aguanta la ventana de condicionamiento llega a leads cualificados consistentes; quien entra en pánico y toca la campaña, nunca.
 
 Lectura del retention graph del VSL: caída brusca al inicio = rehacer hook; declive gradual = normal (así funciona el humano); caída seca a mitad = pregunta sin responder en ese punto.
 
